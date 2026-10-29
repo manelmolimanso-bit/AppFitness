@@ -28,12 +28,12 @@ fun ProfileScreen(
     activitat: String,
     onEditarClick: () -> Unit // Función que llamaré cuando pulsen el botón de editar
 ) {
-    // Uso un Column para poner todo de arriba a abajo
+    // Uso un Column para poner tot de arriba a abajo
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally // Centro todo horizontalmente
+        horizontalAlignment = Alignment.CenterHorizontally // Centro tot horizontalmente
     ) {
         Spacer(modifier = Modifier.height(32.dp))
 
