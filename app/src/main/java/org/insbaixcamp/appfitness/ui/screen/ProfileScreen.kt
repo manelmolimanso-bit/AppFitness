@@ -1,14 +1,14 @@
 package org.insbaixcamp.appfitness.ui.screen
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,163 +16,77 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.insbaixcamp.appfitness.UserProfile
 
+// Pantalla principal donde solo muestro los datos, sin editarlos
 @Composable
 fun ProfileScreen(
-    userProfile: UserProfile,
-    onEditClick: () -> Unit
+    nom: String,
+    correu: String,
+    alcada: String,
+    pes: String,
+    objectiu: String,
+    activitat: String,
+    onEditarClick: () -> Unit // Función que llamaré cuando pulsen el botón de editar
 ) {
+    // Uso un Column para poner todo de arriba a abajo
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally // Centro todo horizontalmente
     ) {
-        // Cabecera superior: Título "Perfil" e icono de editar
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Perfil",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold
-            )
-            IconButton(onClick = onEditClick) {
-                Icon(
-                    imageVector = Icons.Default.Edit,
-                    contentDescription = "Editar perfil",
-                    tint = Color(0xFF00897B)
-                )
-            }
-        }
+        Spacer(modifier = Modifier.height(32.dp))
 
-        Spacer(modifier = Modifier.height(12.dp))
+        // 1. Pongo el avatar que creé en ComponentsPerfil
+        AvatarPerfil()
 
-        // Avatar de perfil, nombre y correo
-        ProfileAvatar(size = 110.dp, showBadge = true)
+        Spacer(modifier = Modifier.height(16.dp))
 
-        Spacer(modifier = Modifier.height(12.dp))
+        // 2. Textos para el nombre y el correo
+        Text(text = nom, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+        Text(text = correu, fontSize = 16.sp, color = Color.Gray)
 
-        Text(
-            text = userProfile.nom,
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold
-        )
-        Text(
-            text = userProfile.correu,
-            fontSize = 14.sp,
-            color = Color.Gray
-        )
+        Spacer(modifier = Modifier.height(32.dp))
 
-        Spacer(modifier = Modifier.height(20.dp))
-
-        // Fila de tarjetas con datos físicos y personales
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            StatCard(
-                label = "Edat",
-                value = "${userProfile.edat} anys",
+        // 3. Fila 1: Altura y Peso (Uso mis TargetaDada)
+        Row(modifier = Modifier.fillMaxWidth()) {
+            // Le pongo weight(1f) a cada una para que ocupen exactamente la mitad de la fila (50%)
+            TargetaDada(
+                titol = "Alçada",
+                valor = "$alcada cm",
                 modifier = Modifier.weight(1f)
             )
-            StatCard(
-                label = "Gènere",
-                value = userProfile.genere,
-                modifier = Modifier.weight(1f)
-            )
-            StatCard(
-                label = "Alçada",
-                value = "${userProfile.alcada} cm",
-                modifier = Modifier.weight(1f)
-            )
-            StatCard(
-                label = "Pes",
-                value = "${userProfile.pes} kg",
+            TargetaDada(
+                titol = "Pes",
+                valor = "$pes kg",
                 modifier = Modifier.weight(1f)
             )
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        // 4. Fila 2: Objetivo y Actividad
+        Row(modifier = Modifier.fillMaxWidth()) {
+            TargetaDada(
+                titol = "Objectiu",
+                valor = objectiu,
+                modifier = Modifier.weight(1f)
+            )
+            TargetaDada(
+                titol = "Activitat",
+                valor = activitat,
+                modifier = Modifier.weight(1f)
+            )
+        }
 
-        // Sección: Objectius
-        SectionHeader(title = "Objectius", onEditClick = onEditClick)
-        InfoCard(
-            title = userProfile.objectiu,
-            subtitle = "Pes objectiu: ${userProfile.pesObjectiu} kg",
-            icon = Icons.Default.Star
-        )
+        Spacer(modifier = Modifier.height(48.dp))
 
-        Spacer(modifier = Modifier.height(20.dp))
-
-        // Sección: Nivell d'activitat
-        SectionHeader(title = "Nivell d'activitat", onEditClick = onEditClick)
-        InfoCard(
-            title = userProfile.activitat,
-            subtitle = obtenirDescripcioActivitat(userProfile.activitat),
-            icon = Icons.Default.Favorite
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        // Sección: Informació addicional
-        SectionHeader(title = "Informació addicional", onEditClick = onEditClick)
-        InfoCard(
-            title = "Preferències alimentàries",
-            subtitle = "Dieta equilibrada / Mediterrània",
-            icon = Icons.Default.Info
-        )
-
-        Spacer(modifier = Modifier.height(28.dp))
-
-        // Botón principal para editar perfil
+        // 5. Botón para ir a la pantalla de edición
         Button(
-            onClick = onEditClick,
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00897B))
+            onClick = onEditarClick, // Lanzo la acción que me pasan por parámetro
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
         ) {
-            Icon(imageVector = Icons.Default.Edit, contentDescription = null)
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("Editar perfil")
+            Text(text = "Editar perfil", fontSize = 18.sp)
         }
-    }
-}
-
-@Composable
-fun SectionHeader(title: String, onEditClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = title,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold
-        )
-        TextButton(onClick = onEditClick) {
-            Text(
-                text = "Editar",
-                color = Color(0xFF00897B),
-                fontWeight = FontWeight.SemiBold
-            )
-        }
-    }
-}
-
-fun obtenirDescripcioActivitat(activitat: String): String {
-    return when (activitat) {
-        "Sedentari" -> "Poc o cap exercici setmanal"
-        "Lleuger" -> "Exercici 1-2 vegades per setmana"
-        "Moderat" -> "Exercici 3-4 vegades per setmana"
-        "Actiu" -> "Exercici 5-6 vegades per setmana"
-        "Molt actiu" -> "Exercici intens diari"
-        else -> "Exercici regular"
     }
 }
