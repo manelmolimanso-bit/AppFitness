@@ -1,49 +1,27 @@
 package org.insbaixcamp.appfitness
-import androidx.compose.ui.tooling.preview.Preview
+
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import org.insbaixcamp.appfitness.ui.screen.EditProfileScreen
 import org.insbaixcamp.appfitness.ui.screen.ProfileScreen
-import org.insbaixcamp.appfitness.ui.theme.AppFitnessTheme
-
-// Modelo de datos con los valores iniciales de Laia Soler
-data class UserProfile(
-    val nom: String = "Laia Soler",
-    val correu: String = "laia.soler@exemple.com",
-    val edat: String = "29",
-    val dataNaixement: String = "15/03/1995",
-    val genere: String = "Dona",
-    val alcada: String = "165",
-    val pes: String = "60",
-    val pesObjectiu: String = "58",
-    val objectiu: String = "Guanyar massa muscular",
-    val activitat: String = "Moderat"
-)
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
-            AppFitnessTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Surface(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(innerPadding),
-                        color = MaterialTheme.colorScheme.background
-                    ) {
-                        FitnessApp()
-                    }
+            MaterialTheme {
+                Surface(modifier = Modifier.fillMaxSize()) {
+                    FitnessApp()
                 }
             }
         }
@@ -52,34 +30,45 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun FitnessApp() {
-    var userProfile by remember { mutableStateOf(UserProfile()) }
-    var isEditing by remember { mutableStateOf(false) }
+    var estemEditant by remember { mutableStateOf(false) }
 
-    if (isEditing) {
-        EditProfileScreen(
-            userProfile = userProfile,
-            onSave = { updatedProfile ->
-                userProfile = updatedProfile
-                isEditing = false
-            },
-            onCancel = {
-                isEditing = false
-            }
+    var nomOficial by remember { mutableStateOf("Laia Soler") }
+    var correuOficial by remember { mutableStateOf("laia.soler@exemple.com") }
+    var alcadaOficial by remember { mutableStateOf("165") }
+    var pesOficial by remember { mutableStateOf("60") }
+    var objectiuOficial by remember { mutableStateOf("Salut") }
+    var activitatOficial by remember { mutableStateOf("Moderat") }
+
+    if (!estemEditant) {
+        ProfileScreen(
+            nom = nomOficial,
+            correu = correuOficial,
+            alcada = alcadaOficial,
+            pes = pesOficial,
+            objectiu = objectiuOficial,
+            activitat = activitatOficial,
+            onEditarClick = { estemEditant = true }
         )
     } else {
-        ProfileScreen(
-            userProfile = userProfile,
-            onEditClick = {
-                isEditing = true
+        EditProfileScreen(
+            nomActual = nomOficial,
+            correuActual = correuOficial,
+            alcadaActual = alcadaOficial,
+            pesActual = pesOficial,
+            objectiuActual = objectiuOficial,
+            activitatActual = activitatOficial,
+            onGuardar = { nouNom, nouCorreu, novaAlcada, nouPes, nouObjectiu, novaActivitat ->
+                nomOficial = nouNom
+                correuOficial = nouCorreu
+                alcadaOficial = novaAlcada
+                pesOficial = nouPes
+                objectiuOficial = nouObjectiu
+                activitatOficial = novaActivitat
+                estemEditant = false
+            },
+            onCancelar = {
+                estemEditant = false
             }
         )
-    }
-
-}
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun FitnessAppPreview() {
-    AppFitnessTheme {
-        FitnessApp()
     }
 }
